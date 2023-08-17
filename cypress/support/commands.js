@@ -14,3 +14,16 @@ Cypress.Commands.add('verificaEmail', (email, password) => {
     cy.wait('@getNotes')
   })
 })
+
+Cypress.Commands.add('login', (
+  email = Cypress.env('USER_EMAIL'),
+  senha = Cypress.env('USER_PASSWORD')
+) => {
+  cy.intercept('GET', '**/notes').as('getNotes')
+  cy.visit('/login')
+  cy.get('#email').type(email)
+  cy.get('#password').type(senha, { log: false })
+  cy.contains('button', 'Login').click()
+  cy.wait('@getNotes')
+  cy.contains('h1', 'Your Notes').should('be.visible')
+})
