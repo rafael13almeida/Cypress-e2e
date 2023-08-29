@@ -15,7 +15,7 @@ Cypress.Commands.add('verificaEmail', (email, password) => {
   })
 })
 
-Cypress.Commands.add('login', (
+Cypress.Commands.add('guiLogin', (
   email = Cypress.env('USER_EMAIL'),
   senha = Cypress.env('USER_PASSWORD')
 ) => {
@@ -26,4 +26,12 @@ Cypress.Commands.add('login', (
   cy.contains('button', 'Login').click()
   cy.wait('@getNotes')
   cy.contains('h1', 'Your Notes').should('be.visible')
+})
+
+Cypress.Commands.add('sessionLogin', (
+  email = Cypress.env('USER_EMAIL'),
+  senha = Cypress.env('USER_PASSWORD')
+) => {
+  const login = () => cy.guiLogin(email, senha)
+  cy.session(email, login)
 })
