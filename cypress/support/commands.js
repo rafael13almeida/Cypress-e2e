@@ -35,3 +35,54 @@ Cypress.Commands.add('sessionLogin', (
   const login = () => cy.guiLogin(email, senha)
   cy.session(email, login)
 })
+
+const anexarArquivoManipulado = () => {
+  cy.get('#file').selectFile('cypress/fixtures/example.json')
+}
+
+Cypress.Commands.add('criarNota', (nota, anexaArquivo = false) => {
+
+  cy.visit('/notes/new')
+  cy.get('#content').type(nota)
+
+  if(anexaArquivo) {
+    anexarArquivoManipulado()
+  }
+
+  cy.contains('button', 'Create').click()
+  cy.contains('.list-group-item', nota).should('be.visible')
+})
+
+Cypress.Commands.add('editarNota', (nota, novaNota, anexaArquivo = false) => {
+  cy.intercept('GET', '**/notes/**').as('getNote')
+
+  cy.contains('.list-group-item', nota).click()
+  cy.wait('@getNote')
+
+  cy.get('#content')
+    .as('contentField')
+    .clear()
+  cy.get('@contentField')
+    .type(novaNota)
+
+  if(anexaArquivo) {
+    anexarArquivoManipulado()
+  }
+
+  cy.contains('button', 'Save').click()
+
+  cy.contains('.list-group-item', nota).should('not.exist')
+  cy.contains('.list-group-item', novaNota).should('be.visible')
+
+})
+
+Cypress.Commands.add('deletaNota', nota => {
+  cy.contains('.list-group-item', nota).click()
+  cy.contains('button', 'Delete').click()
+
+  cy.get('.list-group-item')
+    .its('length')
+    .should('be.at.least', 1)
+  cy.contains('.list-group-item', nota)
+    .should('not.exist')
+})
