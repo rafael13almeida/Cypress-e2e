@@ -34,4 +34,22 @@ describe('crud', () => {
       .should('be.equal', 'Complete')
   })
 
+  it('realizar o logout no sistema', () => {
+    cy.visit('/')
+    cy.wait('@getNotes')
+
+    if (Cypress.config('viewportWidth') < Cypress.env('viewportWidthBreakpoint')) {
+      cy.get('.navbar-toggle.collapsed')
+        .should('be.visible')
+        .click()
+    }
+
+    cy.contains('.nav a', 'Logout')
+      .should('be.visible')
+      .click()
+
+    cy.get('#email')
+      .should('be.visible')
+  })
+
 })
